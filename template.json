@@ -1,0 +1,176 @@
+{
+  "name": "QwenPaw v2 Personal AI Assistant",
+  "description": "Always-on personal AI assistant with chat apps, memory and skills.",
+  "category": "AI/ML",
+  "tags": [
+    "qwenpaw",
+    "agentscope",
+    "ai-agent",
+    "personal-assistant",
+    "telegram",
+    "discord",
+    "slack",
+    "dingtalk",
+    "feishu",
+    "llm"
+  ],
+  "image": "https://cdn.jsdelivr.net/gh/agentscope-ai/QwenPaw@v2.2.2/website/public/qwenpaw-symbol.svg",
+  "upstream": {
+    "repo": "agentscope-ai/QwenPaw",
+    "version": "v2.2.2",
+    "commit": "5c56644a6e130762a236f8c946103e95a0a1eec8",
+    "released": "2026-10-15",
+    "image": "agentscope/qwenpaw:v2.2.2@sha256:ba70a1e6511cca8afa5728d145826b522f835c3405beb9be9e8baa8bad5b1b9b",
+    "checked": "2026-10-20"
+  },
+  "services": {
+    "QwenPaw": {
+      "icon": "https://cdn.jsdelivr.net/gh/agentscope-ai/QwenPaw@v2.2.2/website/public/qwenpaw-symbol.svg",
+      "source": {
+        "repo": "baranberkay96/qwenpaw-railway",
+        "rootDirectory": "/services/qwenpaw"
+      },
+      "startCommand": null,
+      "preDeployCommand": null,
+      "healthcheckPath": "/api/version",
+      "healthcheckTimeout": 600,
+      "restartPolicyType": "ALWAYS",
+      "numReplicas": 1,
+      "cronSchedule": null,
+      "publicDomain": true,
+      "targetPort": 8088,
+      "tcpProxy": null,
+      "volume": {
+        "mountPath": "/data"
+      },
+      "variables": {
+        "PORT": {
+          "defaultValue": "8088",
+          "description": "Port of the QwenPaw console and API. Railway's healthcheck and the public domain use it; keep 8088 unless you also change the domain's target port.",
+          "required": false
+        },
+        "QWENPAW_AUTH_USERNAME": {
+          "defaultValue": "paw-${{secret(10, \"abcdefghijkmnpqrstuvwxyz23456789\")}}",
+          "description": "Console login name, generated at deploy (random on purpose: five wrong passwords lock a username for 15 minutes). Changing it later renames the account on the next restart.",
+          "required": false
+        },
+        "QWENPAW_AUTH_PASSWORD": {
+          "defaultValue": "${{secret(32)}}",
+          "description": "Console login password (min. 12 characters), generated at deploy. Change it here to reset the password on the next restart; a password changed in the Console is kept until this variable changes.",
+          "required": false
+        },
+        "QWENPAW_AGENT_LANGUAGE": {
+          "defaultValue": "en",
+          "description": "Language of the default agent and its persona files, chosen on the first boot only: en, zh, ru or id. Change it later per agent in the Console.",
+          "required": false
+        },
+        "TZ": {
+          "defaultValue": "UTC",
+          "description": "IANA timezone stored as the user timezone on the first boot (e.g. Europe/Istanbul); used for cron jobs and heartbeats. Change it later in the Console.",
+          "required": false
+        },
+        "QWENPAW_TOOL_GUARD_ENABLED": {
+          "defaultValue": "true",
+          "description": "true forces QwenPaw's Tool Guard on (risky tool calls wait for your approval and catastrophic commands are blocked). Empty = the Console toggle decides.",
+          "required": false
+        },
+        "QWENPAW_TOOL_GUARD_DENIED_TOOLS": {
+          "defaultValue": "",
+          "description": "Optional. Comma-separated tools the agent may never call, e.g. execute_shell_command to switch off shell access entirely.",
+          "required": false
+        },
+        "QWENPAW_TELEMETRY_DISABLED": {
+          "defaultValue": "true",
+          "description": "true = no install or daily usage pings to the QwenPaw team (nobody sees upstream's consent prompt on Railway). Set false to share anonymous environment stats.",
+          "required": false
+        },
+        "QWENPAW_DISABLED_CHANNELS": {
+          "defaultValue": "imessage,sip",
+          "description": "Channels hidden from the Console. iMessage needs macOS and SIP needs inbound UDP, neither of which Railway offers.",
+          "required": false
+        },
+        "QWENPAW_TRUSTED_PROXIES": {
+          "defaultValue": "10.0.0.0/8,100.64.0.0/10,172.16.0.0/12,192.168.0.0/16,fd00::/8",
+          "description": "Proxy networks whose X-Forwarded-For QwenPaw trusts, so login lockouts count real client IPs instead of Railway's edge. Written to security.trusted_proxies on every start; empty = trust none.",
+          "required": false
+        },
+        "TELEGRAM_BOT_TOKEN": {
+          "defaultValue": "",
+          "description": "Optional. Telegram bot token from @BotFather; enables the Telegram channel. Unknown senders must be approved in the Console first.",
+          "required": false
+        },
+        "DISCORD_BOT_TOKEN": {
+          "defaultValue": "",
+          "description": "Optional. Discord bot token (Developer Portal > Bot, enable the Message Content intent); enables the Discord channel.",
+          "required": false
+        },
+        "SLACK_BOT_TOKEN": {
+          "defaultValue": "",
+          "description": "Optional. Slack bot token (xoxb-...). Needs SLACK_APP_TOKEN too (Socket Mode, no public webhook).",
+          "required": false
+        },
+        "SLACK_APP_TOKEN": {
+          "defaultValue": "",
+          "description": "Optional. Slack app-level token (xapp-...) with connections:write, for Socket Mode.",
+          "required": false
+        },
+        "DINGTALK_CLIENT_ID": {
+          "defaultValue": "",
+          "description": "Optional. DingTalk app Client ID (AppKey); with DINGTALK_CLIENT_SECRET enables the DingTalk channel (Stream mode).",
+          "required": false
+        },
+        "DINGTALK_CLIENT_SECRET": {
+          "defaultValue": "",
+          "description": "Optional. DingTalk app Client Secret (AppSecret).",
+          "required": false
+        },
+        "FEISHU_APP_ID": {
+          "defaultValue": "",
+          "description": "Optional. Feishu/Lark app ID (cli_...); with FEISHU_APP_SECRET enables the Feishu channel (WebSocket long connection).",
+          "required": false
+        },
+        "FEISHU_APP_SECRET": {
+          "defaultValue": "",
+          "description": "Optional. Feishu/Lark app secret.",
+          "required": false
+        },
+        "FEISHU_DOMAIN": {
+          "defaultValue": "",
+          "description": "Optional. feishu (China, default) or lark (international).",
+          "required": false
+        },
+        "QQ_APP_ID": {
+          "defaultValue": "",
+          "description": "Optional. QQ bot AppID; with QQ_CLIENT_SECRET enables the QQ channel.",
+          "required": false
+        },
+        "QQ_CLIENT_SECRET": {
+          "defaultValue": "",
+          "description": "Optional. QQ bot AppSecret.",
+          "required": false
+        },
+        "WECOM_BOT_ID": {
+          "defaultValue": "",
+          "description": "Optional. WeCom (WeChat Work) AI bot ID; with WECOM_SECRET enables the WeCom channel.",
+          "required": false
+        },
+        "WECOM_SECRET": {
+          "defaultValue": "",
+          "description": "Optional. WeCom AI bot secret.",
+          "required": false
+        },
+        "LLAMA_ARG_THREADS": {
+          "defaultValue": "",
+          "description": "Optional. CPU threads for in-container llama.cpp models (QwenPaw Local). Empty = derived from the container's CPU quota, capped at 8.",
+          "required": false
+        },
+        "RAILWAY_DEPLOYMENT_DRAINING_SECONDS": {
+          "defaultValue": "30",
+          "description": "Seconds the old container gets to finish running replies and flush memory before a redeploy stops it.",
+          "required": false
+        }
+      }
+    }
+  },
+  "buckets": []
+}
